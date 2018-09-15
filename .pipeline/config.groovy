@@ -51,8 +51,8 @@ app {
                         'NAME':"${app.name}",
                         'SUFFIX': "${app.build.suffix}",
                         'VERSION':"${app.build.version}",
-                        'SOURCE_BASE_CONTEXT_DIR': "example/backend/app-base",
-                        'SOURCE_CONTEXT_DIR': "example/backend/app",
+                        'SOURCE_BASE_CONTEXT_DIR': "app-base",
+                        'SOURCE_CONTEXT_DIR': "app",
                         'SOURCE_REPOSITORY_URL': "${app.git.uri}"
                 ]
             ]
