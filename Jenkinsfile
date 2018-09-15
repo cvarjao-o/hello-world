@@ -12,9 +12,10 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
+                    sh("git diff --name-only HEAD~1..HEAD | grep -v '^.tools/'")
                     def hasChangesInPath = sh(script:"[ \"\$(git diff --name-only HEAD~1..HEAD | grep -v '^.tools/' | wc -l)\" -eq 0 ] && exit 999 || exit 0", returnStatus: true) == 0
                     if (!hasChangesInPath){
-                        currentBuild.rawBuild.delete()
+                        //currentBuild.rawBuild.delete()
                         error("No changes detected in the path")
                     }
                 }
