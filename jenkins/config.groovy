@@ -30,7 +30,7 @@ app {
         }
         version = "${app.build.env.name}-v${opt.'pr'}"
         name = "${opt.'build-name'?:app.name}"
-        suffix = "-build-${opt.'pr'}"
+        suffix = "${vars.deployment.suffix}"
         id = "${app.name}${app.build.suffix}"
         namespace = app.namespaces.'build'.namespace
         timeoutInSeconds = 60*20 // 20 minutes
@@ -51,11 +51,11 @@ app {
             name = vars.deployment.env.name // env-name
             id = vars.deployment.env.id
         }
-        id = "${app.name}" // app (unique name across all deployments int he namespace)
-        version = "v1" //app-version  and tag
-        name = "${app.name}" //app-name   (same name accross all deployments)
-
+        version = "${vars.deployment.version}" //app-version  and tag
+        name = "${vars.deployment.name}" //app-name   (same name accross all deployments)
+        id = "${app.deployment.name}${app.deployment.suffix}" // app (unique name across all deployments int he namespace)
         namespace = "${vars.deployment.namespace}"
+
         timeoutInSeconds = 60*20 // 20 minutes
         templates = [
                 [
@@ -72,15 +72,49 @@ app {
     }
 }
 
-vars {
-    deployment {
-        env {
-            name ="prod"
-            id = "pr-${opt.'pr'}"
+environments {
+    'dev' {
+        vars {
+            deployment {
+                env {
+                    name ="dev"
+                    id = "pr-${opt.'pr'}"
+                }
+                suffix = "-dev-${opt.'pr'}"
+                name = "${opt.'deployment-name'?:app.name}"
+                namespace = app.namespaces[env.name].namespace
+                version = "${vars.deployment.name}-${vars.deployment.env.name}-v${opt.'pr'}" //app-version  and tag
+            }
         }
-        suffix = ''
-        name = "${opt.'deployment-name'?:app.name}"
-        namespace = app.namespaces[env.name].namespace
-        version = "${vars.deployment.name}-${vars.deployment.env.name}-${opt.'pr'}" //app-version  and tag
+    }
+    'test' {
+        vars {
+            deployment {
+                env {
+                    name ="test"
+                    id = "pr-${opt.'pr'}"
+                }
+                suffix = '-test'
+                name = "${opt.'deployment-name'?:app.name}"
+                namespace = app.namespaces[env.name].namespace
+                version = "${vars.deployment.name}-${vars.deployment.env.name}" //app-version  and tag
+            }
+        }
+    }
+    'prod' {
+        vars {
+            deployment {
+                env {
+                    name ="prod"
+                    id = "pr-${opt.'pr'}"
+                }
+                suffix = ''
+                id = "${app.name}${vars.deployment.suffix}"
+                name = "${opt.'deployment-name'?:app.name}"
+                namespace = app.namespaces[env.name].namespace
+                version = "${vars.deployment.name}-${vars.deployment.env.name}" //app-version  and tag
+            }
+        }
     }
 }
+
