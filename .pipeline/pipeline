@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+set -e
+
+NODE_VERSION='10.11.0'
+NODE_ARCH='x64'
+NODE_PLATFORM='linux'
+NODE_EXTENSION='tar.xz'
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  NODE_PLATFORM='darwin'
+  NODE_EXTENSION='tar.gz'
+fi
+NODE_URL="https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-${NODE_PLATFORM}-${NODE_ARCH}.${NODE_EXTENSION}"
+NODE_PKG_NAME="node-v${NODE_VERSION}-${NODE_PLATFORM}-${NODE_ARCH}.${NODE_EXTENSION}"
+
+#echo "NODE_URL=${NODE_URL}"
+if [ ! -f "/tmp/${NODE_PKG_NAME}" ]; then
+  echo "Downloading ..."
+  curl -sSL "${NODE_URL}" -o "/tmp/${NODE_PKG_NAME}"
+fi
+NODE_HOME=".node/node-v${NODE_VERSION}-${NODE_PLATFORM}-${NODE_ARCH}"
+if [ ! -d "${NODE_HOME}" ]; then
+  mkdir -p ".node"
+  tar -xzf "/tmp/${NODE_PKG_NAME}" -C ".node"
+fi
+
+if [ ! -d "node_modules" ]; then
+  "${NODE_HOME}/bin/npm" "install"
+fi
+
+export PATH="${NODE_HOME}/bin:$PATH"
+exec "${NODE_HOME}/bin/npm" run-script "$@"

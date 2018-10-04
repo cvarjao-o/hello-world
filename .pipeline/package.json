@@ -1,0 +1,16 @@
+{
+  "name": "pipeline",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node oc-build",
+    "deploy": "node oc-deploy",
+    "version": "echo \"node@$(node --version) ($(which node))\" && echo \"npm@$(npm --version) ($(which npm))\" && npm ls"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "oc-cli-wrapper": "git+https://github.com/cvarjao-o/node-oc-cli-wrapper.git#master"
+  }
+}
