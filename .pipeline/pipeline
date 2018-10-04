@@ -27,9 +27,10 @@ if [ ! -d "${NODE_HOME}" ]; then
   fi
 fi
 
+export PATH="${NODE_HOME}/bin:$PATH"
+
 if [ ! -d "node_modules" ]; then
   "${NODE_HOME}/bin/npm" "install"
 fi
 
-export PATH="${NODE_HOME}/bin:$PATH"
 exec "${NODE_HOME}/bin/npm" run-script "$@"
