@@ -20,7 +20,7 @@ fi
 NODE_HOME=".node/node-v${NODE_VERSION}-${NODE_PLATFORM}-${NODE_ARCH}"
 if [ ! -d "${NODE_HOME}" ]; then
   mkdir -p ".node"
-  if [[ "$NODE_EXTENSION" == "tar.xz"]]; then
+  if [[ "$NODE_EXTENSION" == "tar.xz" ]]; then
     tar -xf "/tmp/${NODE_PKG_NAME}" -C ".node"
   else
     tar -xzf "/tmp/${NODE_PKG_NAME}" -C ".node"
