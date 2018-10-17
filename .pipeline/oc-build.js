@@ -1,4 +1,6 @@
-var log4js = require('log4js');
+const log4js = require('log4js');
+const fs = require('fs');
+
 log4js.configure({
   appenders: {
     console: { type: 'console' }
@@ -27,9 +29,9 @@ const buildConfigs=[{
 //Process Template(s) and create a single List of resources
 oc.process(buildConfigs)
 .then(result =>{
-  //Apply best practices, validate, and standard labels/annotaions
-  return oc.prepare(result)}
-)
+  //Apply best practices, validate, and apply standard labels/annotaions
+  return oc.prepare(result)
+})
 .then((result)=>{
   //Apply the configurations for creating or updating resources
   return oc.apply({'filename':result});
@@ -39,10 +41,8 @@ oc.process(buildConfigs)
   return oc.startBuilds(result)
 })
 .then((result)=>{
-  console.dir(result)
-  //result.forEach(item => {
-  //  oc.logsToFileSync({resource:`${item.build.kind}/${item.build.metadata.name}`, timestamps:'true'}, `./output/${item.build.metadata.name}.build.log.txt`)
-  //});
-
-  
+  //Collect some of the resources (bc,build,istag,isimage + build logs) used or produced during build, and save them to disk
+  //Maybe archive/publish somewhere elase
+  oc.saveBuildArtifactsToDir(result, './output')
+  return result
 })
