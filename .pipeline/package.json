@@ -15,6 +15,6 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "oc-cli-wrapper": "git+https://github.com/cvarjao-o/node-oc-cli-wrapper.git#bf90b2d6069d9e717bdccca6016ecc74ef2c2436"
+    "oc-cli-wrapper": "git+https://github.com/cvarjao-o/node-oc-cli-wrapper.git#8f8e855fb39b0d673854dde66c0d3718b660ec7c"
   }
 }

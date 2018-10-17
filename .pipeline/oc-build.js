@@ -4,7 +4,7 @@ log4js.configure({
     console: { type: 'console' }
   },
   categories: {
-    default: { appenders: ['console'], level: 'trace' }
+    default: { appenders: ['console'], level: 'info' }
   }
 });
 
@@ -24,13 +24,25 @@ const buildConfigs=[{
   ]
 }]
 
+//Process Template(s) and create a single List of resources
 oc.process(buildConfigs)
 .then(result =>{
+  //Apply best practices, validate, and standard labels/annotaions
   return oc.prepare(result)}
 )
 .then((result)=>{
-  return oc.apply({'filename':result, 'dry-run':'true'});
+  //Apply the configurations for creating or updating resources
+  return oc.apply({'filename':result});
+})
+.then(result => {
+  //Build all BuildConfig that needs to be done
+  return oc.startBuilds(result)
 })
 .then((result)=>{
-  console.dir(result.length)
+  console.dir(result)
+  //result.forEach(item => {
+  //  oc.logsToFileSync({resource:`${item.build.kind}/${item.build.metadata.name}`, timestamps:'true'}, `./output/${item.build.metadata.name}.build.log.txt`)
+  //});
+
+  
 })
