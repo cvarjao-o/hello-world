@@ -9,15 +9,7 @@ log4js.configure({
 });
 
 const cli = require('oc-cli-wrapper')
-
-const parameters= process.argv;//.slice(2)
-for (let j = 0; j < parameters.length; j++) {  
-  console.log(j + ' -> ' + (parameters[j]));
-}
-
-//process.exit(0)
-
-const oc=cli({'options':{'namespace':'csnr-devops-lab-tools'}, 'cwd':'/Users/cvarjao/Documents/GitHub/cvarjao-o/hello-world'});
+const oc=cli({'options':{'namespace':'csnr-devops-lab-tools'}});
 
 const buildConfigs=[{
   'filename':'.pipeline/_python36.bc.json',
