@@ -1,16 +1,20 @@
 {
   "name": "pipeline",
   "version": "1.0.0",
-  "description": "",
+  "description": "This a pipeliene script",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node oc-build",
-    "deploy": "node oc-deploy",
+    "build": "node oc-build.js",
+    "deploy": "node oc-deploy.js",
     "version": "echo \"node@$(node --version) ($(which node))\" && echo \"npm@$(npm --version) ($(which npm))\" && npm ls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cvarjao-o/hello-world.git"
   },
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "oc-cli-wrapper": "git+https://github.com/cvarjao-o/node-oc-cli-wrapper.git#master"
+    "oc-cli-wrapper": "git+https://github.com/cvarjao-o/node-oc-cli-wrapper.git#bf90b2d6069d9e717bdccca6016ecc74ef2c2436"
   }
 }

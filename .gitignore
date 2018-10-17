@@ -24,3 +24,5 @@ hs_err_pid*
 .pipeline/.node/
 node_modules
 
+.pipeline/.npm/
+.DS_Store
