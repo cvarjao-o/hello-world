@@ -11,7 +11,7 @@ for (let j = 0; j < parameters.length; j++) {
 const cli=oc({'options':{'namespace':'csnr-devops-lab-tools'}});
 
 const args2={
-  'filename':'_python36.bc.json',
+  'filename':'openshift/_python36.bc.json',
   'param':[
     'NAME=hello',
     'SUFFIX=-prod',
