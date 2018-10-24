@@ -12,7 +12,6 @@ pipeline {
             agent { label 'build' }
             steps {
                 script {
-                    sh("git diff --name-only HEAD~1..HEAD | grep -v '^.tools/'")
                     def hasChangesInPath = sh(script:"[ \"\$(git diff --name-only HEAD~1..HEAD | grep -v '^.tools/' | wc -l)\" -eq 0 ] && exit 999 || exit 0", returnStatus: true) == 0
                     if (!hasChangesInPath){
                         //currentBuild.rawBuild.delete()
@@ -24,14 +23,14 @@ pipeline {
                     abortAllPreviousBuildInProgress(currentBuild)
                 }
                 echo "Building ..."
-                sh "curl -sSL '${OCP_PIPELINE_CLI_URL}' | bash -s build --config=.pipeline/config.groovy --pr=${CHANGE_ID}"
+                sh ".pipeline/pipeline build --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
             agent { label 'deploy' }
             steps {
                 echo "Deploying ..."
-                sh "curl -sSL '${OCP_PIPELINE_CLI_URL}' | bash -s deploy --config=.pipeline/config.groovy --pr=${CHANGE_ID} --env=dev"
+                sh ".pipeline/pipeline deploy --pr=${CHANGE_ID} --env=dev"
             }
         }
     }

@@ -4,8 +4,8 @@
   "description": "This a pipeliene script",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node oc-build.js",
-    "deploy": "node oc-deploy.js",
+    "build": "node build.js",
+    "deploy": "node deploy.js",
     "version": "echo \"node@$(node --version) ($(which node))\" && echo \"npm@$(npm --version) ($(which npm))\" && npm ls"
   },
   "repository": {
