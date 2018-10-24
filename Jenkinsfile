@@ -3,10 +3,6 @@ pipeline {
     options {
         disableResume()
     }
-    environment {
-        OCP_PIPELINE_CLI_URL = 'https://raw.githubusercontent.com/BCDevOps/ocp-cd-pipeline/822d5770b5742a60fd31a43a477ab4faf94c260a/src/main/resources/pipeline-cli'
-        OCP_PIPELINE_VERSION = '0.0.4'
-    }
     stages {
         stage('Build') {
             agent { label 'build' }
@@ -23,14 +19,14 @@ pipeline {
                     abortAllPreviousBuildInProgress(currentBuild)
                 }
                 echo "Building ..."
-                sh ".pipeline/pipeline build --pr=${CHANGE_ID}"
+                sh ".pipeline/cli.sh build --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
             agent { label 'deploy' }
             steps {
                 echo "Deploying ..."
-                sh ".pipeline/pipeline deploy --pr=${CHANGE_ID} --env=dev"
+                sh ".pipeline/cli.sh deploy --pr=${CHANGE_ID} --env=dev"
             }
         }
     }
