@@ -16,14 +16,14 @@ pipeline {
                     abortAllPreviousBuildInProgress(currentBuild)
                 }
                 echo "Building ..."
-                sh "cd jenkins; curl -sSL '${OCP_PIPELINE_CLI_URL}' | bash -s build --config=config.groovy --pr=${CHANGE_ID}"
+                sh "pipeline/cli.sh build --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
             agent { label 'deploy' }
             steps {
                 echo "Deploying ..."
-                sh "cd jenkins; curl -sSL '${OCP_PIPELINE_CLI_URL}' | bash -s deploy --config=config.groovy --pr=${CHANGE_ID} --env=dev"
+                sh "pipeline/cli.sh deploy --pr=${CHANGE_ID} --env=dev"
             }
         }
         stage('Deploy (TEST)') {
@@ -34,7 +34,7 @@ pipeline {
             }
             steps {
                 echo "Deploying ..."
-                sh "cd jenkins; curl -sSL '${OCP_PIPELINE_CLI_URL}' | bash -s deploy --config=config.groovy --pr=${CHANGE_ID} --env=test"
+                sh "pipeline/cli.sh deploy --pr=${CHANGE_ID} --env=test"
             }
         }
         stage('Deploy (PROD)') {
@@ -45,7 +45,7 @@ pipeline {
             }
             steps {
                 echo "Deploying ..."
-                sh "cd jenkins; curl -sSL '${OCP_PIPELINE_CLI_URL}' | bash -s deploy --config=config.groovy --pr=${CHANGE_ID} --env=prod"
+                sh "pipeline/cli.sh deploy --pr=${CHANGE_ID} --env=prod"
             }
         }
     }
