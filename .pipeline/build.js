@@ -39,6 +39,10 @@ oc.process(buildConfigs)
   return oc.prepare(result)
 })
 .then((result)=>{
+  oc.setBasicLabels(result, 'hello', 'build', 'pr-1')
+  return result;
+})
+.then((result)=>{
   //Apply the configurations for creating or updating resources
   return oc.apply(result);
 })
