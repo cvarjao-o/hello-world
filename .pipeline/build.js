@@ -15,8 +15,8 @@ const gitRepositoryURL = spawnSync('git', ['config', '--get', 'remote.origin.url
 var gitBranchRef = `refs/pull/${oc.settings['pr'] || 0}/head`
 
 if (gitBranchRef == 'refs/pull/0/head'){
-  gitBranchRef = spawnSync('git', ['name-rev','--name-only','HEAD'], {encoding:'utf-8'}).stdout.trim()
-  gitBranchRef = spawnSync('git', ['config', `branch.${gitBranchRef}.merge`], {encoding:'utf-8'}).stdout.trim()
+  var gitBranchName = spawnSync('git', ['name-rev','--name-only','HEAD'], {encoding:'utf-8'}).stdout.trim()
+  gitBranchRef = spawnSync('git', ['config', `branch.${gitBranchName}.merge`], {encoding:'utf-8'}).stdout.trim()
 }
 
 const buildConfigs=[{
