@@ -146,17 +146,23 @@ class Pipeline {
               console.log(`Skipping ${stage.name} (no input file)`)
             }
           }else{
-            promises.push(new Promise(function(resolve, reject) {
-              //state.active[stage._path] = true
-              const startTime = process.hrtime()
-              pipeline.setStageState(stage, 'start', startTime)
-              stage.steps(stage, resolve, reject)
-              pipeline.setStageState(stage, 'duration', process.hrtime(startTime))
-              //delete state.active[stage._path]
-            }).then(result=>{
-              pipeline.setStageOutput(stage, result);
-              pipeline.saveState()
-            }))
+            var previousResult = pipeline.getStageOutput(stage)
+            if (previousResult !=null){
+              console.log(`Reusing previous output for ${stage.name}`)
+              promises.push(Promise.resolve(previousResult))
+            }else{
+              promises.push(new Promise(function(resolve, reject) {
+                //state.active[stage._path] = true
+                const startTime = process.hrtime()
+                pipeline.setStageState(stage, 'start', startTime)
+                stage.steps(stage, resolve, reject)
+                pipeline.setStageState(stage, 'duration', process.hrtime(startTime))
+                //delete state.active[stage._path]
+              }).then(result=>{
+                pipeline.setStageOutput(stage, result);
+                pipeline.saveState()
+              }))
+            }
           }
         }else{
           console.log(`Skipping ${stage.name}`)
