@@ -120,36 +120,36 @@ class Pipeline {
 
         if (stage.skip === false ){
           console.log(`Scheduling ${stage.name}`)
-          if (stage instanceof Gate){
-            //
-            if (fs.existsSync('pipeline.input.json')) {
-              fs.renameSync('pipeline.input.json', `pipeline.state.${stage.name}.json`)
-            }
-            if (fs.existsSync(`pipeline.state.${stage.name}.json`)) {
-              var inputFileContent = fs.readFileSync(`pipeline.state.${stage.name}.json`, {encoding:'utf-8'});
-              var input = JSON.parse(inputFileContent)
-              promises.push(new Promise(function(resolve, reject) {
-                //state.active[stage._path] = true
-                const startTime = process.hrtime()
-                pipeline.setStageState(stage, 'start', startTime)
-                stage.steps(input, stage, resolve, reject)
-                pipeline.setStageState(stage, 'duration', process.hrtime(startTime))
-                //delete state.active[stage._path]
-              }).then(result=>{
-                pipeline.setStageOutput(stage, result);
-                pipeline.saveState()
-              }).catch(()=>{
-                pipeline.setStageOutput(stage, undefined);
-                pipeline.saveState()
-              }))
-            }else{
-              console.log(`Skipping ${stage.name} (no input file)`)
-            }
+          var previousResult = pipeline.getStageOutput(stage)
+          if (previousResult !=null){
+            console.log(`Reusing previous output for ${stage.name}`)
+            promises.push(Promise.resolve(previousResult))
           }else{
-            var previousResult = pipeline.getStageOutput(stage)
-            if (previousResult !=null){
-              console.log(`Reusing previous output for ${stage.name}`)
-              promises.push(Promise.resolve(previousResult))
+            if (stage instanceof Gate){
+              //
+              if (fs.existsSync('pipeline.input.json')) {
+                fs.renameSync('pipeline.input.json', `pipeline.state.${stage.name}.json`)
+              }
+              if (fs.existsSync(`pipeline.state.${stage.name}.json`)) {
+                var inputFileContent = fs.readFileSync(`pipeline.state.${stage.name}.json`, {encoding:'utf-8'});
+                var input = JSON.parse(inputFileContent)
+                promises.push(new Promise(function(resolve, reject) {
+                  //state.active[stage._path] = true
+                  const startTime = process.hrtime()
+                  pipeline.setStageState(stage, 'start', startTime)
+                  stage.steps(input, stage, resolve, reject)
+                  pipeline.setStageState(stage, 'duration', process.hrtime(startTime))
+                  //delete state.active[stage._path]
+                }).then(result=>{
+                  pipeline.setStageOutput(stage, result);
+                  pipeline.saveState()
+                }).catch(()=>{
+                  pipeline.setStageOutput(stage, undefined);
+                  pipeline.saveState()
+                }))
+              }else{
+                console.log(`Skipping ${stage.name} (no input file)`)
+              }
             }else{
               promises.push(new Promise(function(resolve, reject) {
                 //state.active[stage._path] = true
