@@ -295,5 +295,14 @@ pipeline(
   })
   .then("deploy-test", defaultStep)
   .then("deploy-prod", defaultStep)
-  .then("terminate", defaultStep)
+  .gate('final-approval', defaultGate,{
+    description:'',
+    parameters:[
+      {id:'comment', type:'text', description:'Comment'}
+    ]
+  })
+  .then("clean", async (ctx, resolve, reject)=>{
+    await require('./lib/clean.js')()
+    resolve(true)
+  })
 )
