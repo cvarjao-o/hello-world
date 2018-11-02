@@ -130,26 +130,27 @@ class Pipeline {
               if (fs.existsSync('pipeline.input.json')) {
                 fs.renameSync('pipeline.input.json', `pipeline.state.${stage.name}.json`)
               }
+              var input = undefined
+
               if (fs.existsSync(`pipeline.state.${stage.name}.json`)) {
                 var inputFileContent = fs.readFileSync(`pipeline.state.${stage.name}.json`, {encoding:'utf-8'});
-                var input = JSON.parse(inputFileContent)
-                promises.push(new Promise(function(resolve, reject) {
-                  //state.active[stage._path] = true
-                  const startTime = process.hrtime()
-                  pipeline.setStageState(stage, 'start', startTime)
-                  stage.steps(input, stage, resolve, reject)
-                  pipeline.setStageState(stage, 'duration', process.hrtime(startTime))
-                  //delete state.active[stage._path]
-                }).then(result=>{
-                  pipeline.setStageOutput(stage, result);
-                  pipeline.saveState()
-                }).catch(()=>{
-                  pipeline.setStageOutput(stage, undefined);
-                  pipeline.saveState()
-                }))
-              }else{
-                console.log(`Skipping ${stage.name} (no input file)`)
+                input = JSON.parse(inputFileContent)
               }
+
+              promises.push(new Promise(function(resolve, reject) {
+                //state.active[stage._path] = true
+                const startTime = process.hrtime()
+                pipeline.setStageState(stage, 'start', startTime)
+                stage.steps(input, stage, resolve, reject)
+                pipeline.setStageState(stage, 'duration', process.hrtime(startTime))
+                //delete state.active[stage._path]
+              }).then(result=>{
+                pipeline.setStageOutput(stage, result);
+                pipeline.saveState()
+              }).catch(()=>{
+                pipeline.setStageOutput(stage, undefined);
+                pipeline.saveState()
+              }))
             }else{
               promises.push(new Promise(function(resolve, reject) {
                 //state.active[stage._path] = true
@@ -256,8 +257,12 @@ const defaultStep=(ctx, resolve, reject) =>{
 }
 
 const defaultGate=(input, ctx, resolve, reject) =>{
-  console.log(`Running '${ctx._path}'`)
-  resolve(true)
+  if (input!=null){
+    console.log(`Running '${ctx._path}'`)
+    resolve(true)
+  }else{
+    resolve(undefined)
+  }
 }
 
 pipeline(
