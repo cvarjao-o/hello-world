@@ -167,6 +167,8 @@ class Pipeline {
           }
         }else{
           console.log(`Skipping ${stage.name}`)
+          pipeline.setStageOutput(stage, undefined);
+          pipeline.saveState()
         }
       }else{
         stage.steps.forEach(subStage =>{
