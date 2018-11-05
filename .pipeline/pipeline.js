@@ -6,6 +6,12 @@ const isFunction = require('lodash.isfunction');
 
 
 class Stage {
+  /**
+   * {name, description, callback, stages, options}
+   * @param {*} name 
+   * @param {*} options 
+   * @param {*} callback 
+   */
   constructor(name, options=undefined, callback=undefined){
     if (isFunction(options) || options instanceof Array) {
       callback=options

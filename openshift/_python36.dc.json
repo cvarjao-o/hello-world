@@ -87,7 +87,7 @@
               "type": "ConfigChange"
             }
           ],
-          "replicas": 1,
+          "replicas": 2,
           "test": false,
           "selector": {
             "name": "${NAME}${SUFFIX}"

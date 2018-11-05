@@ -1,57 +1,27 @@
 'use strict';
-const {spawnSync} = require('child_process');
-const cli = require('oc-cli-wrapper')
-
+const {Pipeline, OpenShiftClient, OpenShiftClientX} = require('pipeline-cli')
+const path = require('path');
 
 
 module.exports = (settings)=>{
-  const oc=cli({'options':{'namespace':'csnr-devops-lab-tools'}});
-  oc.util.configureLogging({
-    appenders: {
-      console: { type: 'console' }
-    },
-    categories: {
-      default: { appenders: ['console'], level: 'info' }
-    }
-  })
+  const oc=new OpenShiftClientX({'namespace':'csnr-devops-lab-tools'});
+  var templateFile = path.resolve(__dirname, '../../openshift/_python36.bc.json')
 
-  const gitRepositoryURL = spawnSync('git', ['config', '--get', 'remote.origin.url'], {encoding:'utf-8'}).stdout.trim()
-  var gitBranchRef = `refs/pull/${oc.settings['pr'] || 0}/head`
-
-  if (gitBranchRef == 'refs/pull/0/head'){
-    var gitBranchName = spawnSync('git', ['name-rev','--name-only','HEAD'], {encoding:'utf-8'}).stdout.trim()
-    gitBranchRef = spawnSync('git', ['config', `branch.${gitBranchName}.merge`], {encoding:'utf-8'}).stdout.trim()
-  }
-
-  const buildConfigs=[{
-    'filename':'openshift/_python36.bc.json',
+  var objects = oc.process(oc.toFileUrl(templateFile), {
     'param':{
       'NAME':'hello',
       'SUFFIX':'-prod',
       'VERSION':'1.0.0',
       'SOURCE_BASE_CONTEXT_DIR':'app-base',
       'SOURCE_CONTEXT_DIR':'app',
-      'SOURCE_REPOSITORY_URL':`${gitRepositoryURL}`,
-      'SOURCE_REPOSITORY_REF':`${gitBranchRef}`
+      'SOURCE_REPOSITORY_URL':`${oc.git.uri}`,
+      'SOURCE_REPOSITORY_REF':`${oc.git.branch_ref}`
     }
-  }]
+  })
 
-  //Process Template(s) and create a single List of resources
-  return oc.process(buildConfigs)
-  .then(result =>{
-    //Apply best practices, validate, and apply standard labels/annotaions
-    return oc.prepare(result)
-  })
-  .then((result)=>{
-    oc.setBasicLabels(result, 'hello', 'build', 'pr-1')
-    return result;
-  })
-  .then((result)=>{
-    //Apply the configurations for creating or updating resources
-    return oc.apply(result);
-  })
-  .then(result => {
-    //Build all BuildConfig that needs to be done
-    return oc.startBuilds(result)
-  })
+  oc.applyBestPractices(objects)
+  oc.applyRecommendedLabels(objects, 'hello', 'dev', '1')
+  oc.fetchSecretsAndConfigMaps(objects)
+  var applyResult = oc.apply(objects)
+  applyResult.narrow('bc').startBuild()
 }
