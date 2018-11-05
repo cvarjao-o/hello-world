@@ -19,7 +19,6 @@
   "dependencies": {
     "lodash.isfunction": "^3.0.9",
     "lodash.isplainobject": "^4.0.6",
-    "oc-cli-wrapper": "git+https://github.com/cvarjao-o/node-oc-cli-wrapper.git#094654871b419a02f1e79a6a1c7cdb13b4a12368",
-    "pipeline-cli": "git+https://github.com/cvarjao-o/pipeline-cli.git#2ed2585fb72097f1f9c50e74da7eb81e4ad1436f"
+    "pipeline-cli": "git+https://github.com/cvarjao-o/pipeline-cli.git#4790ca5660c39b9f95f51eee58fa5352a5d9f476"
   }
 }
