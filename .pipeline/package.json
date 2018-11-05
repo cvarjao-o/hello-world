@@ -19,6 +19,6 @@
   "dependencies": {
     "lodash.isfunction": "^3.0.9",
     "lodash.isplainobject": "^4.0.6",
-    "pipeline-cli": "git+https://github.com/cvarjao-o/pipeline-cli.git#4790ca5660c39b9f95f51eee58fa5352a5d9f476"
+    "pipeline-cli": "git+https://github.com/cvarjao-o/pipeline-cli.git#179cd4c94d82dfaac0b2eda17c686c620d780bbb"
   }
 }
