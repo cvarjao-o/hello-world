@@ -1,0 +1,73 @@
+{
+  "build": {
+    "start": [
+      412690,
+      569291879
+    ],
+    "duration": [
+      18,
+      652684537
+    ],
+    "output": true
+  },
+  "qa": {
+    "start": [
+      412718,
+      162379591
+    ],
+    "duration": [
+      0,
+      122715
+    ],
+    "output": true
+  },
+  "test.functional": {
+    "start": [
+      412722,
+      679060873
+    ],
+    "duration": [
+      0,
+      50806
+    ],
+    "output": true
+  },
+  "test.security": {
+    "start": [
+      412722,
+      679180537
+    ],
+    "duration": [
+      0,
+      35755
+    ],
+    "output": true
+  },
+  "test.system": {
+    "start": [
+      412722,
+      686200051
+    ],
+    "duration": [
+      0,
+      102032
+    ],
+    "output": true
+  },
+  "approve-to-dev": {
+    "start": [
+      412722,
+      687207893
+    ],
+    "duration": [
+      0,
+      75195
+    ]
+  },
+  "deploy-dev": {},
+  "approve-to-test": {},
+  "deploy-test": {},
+  "deploy-prod": {},
+  "final-approval": {},
+  "clean": {}
+}
