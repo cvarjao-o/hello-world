@@ -1,6 +1,6 @@
 'use strict';
 const {Pipeline:Pipeline, PipelineStage:Stage, PipelineGate:Gate} = require('pipeline-cli')
-const stage = Gate.create
+const stage = Stage.create
 const pipeline = function (stages){
   new Pipeline(stages).run()
 }
