@@ -30,19 +30,23 @@ app {
         }
         version = "${app.build.env.name}-v${opt.'pr'}"
         name = "${opt.'build-name'?:app.name}"
-        suffix = "${vars.deployment.suffix}"
+        suffix = "-build-${opt.'pr'}"
         id = "${app.name}${app.build.suffix}"
         namespace = app.namespaces.'build'.namespace
         timeoutInSeconds = 60*20 // 20 minutes
         templates = [
-            [
-                'file':'https://raw.githubusercontent.com/cvarjao-o/openshift-templates/f1d3e44018618ef7c9b9b52dd81d83d7030115db/jenkins/jenkins.bc.yaml',
-                'params':[
-                    'NAME': "${app.build.name}",
-                    'SUFFIX': "${app.build.suffix}",
-                    'VERSION': app.build.version
+                [
+                    'file':'jenkins/openshift/jenkins.bc.json',
+                    'params':[
+                        'NAME': "${app.build.name}",
+                        'SUFFIX': "${app.build.suffix}",
+                        'VERSION': app.build.version,
+                        'SOURCE_REPOSITORY_URL': "${app.git.uri}",
+                        'SOURCE_REPOSITORY_REF': "${app.git.ref}",
+                        'SOURCE_IMAGE_STREAM_NAMESPACE': "bcgov",
+                        'SOURCE_IMAGE_STREAM_TAG': "jenkins-basic:v2-latest"
+                    ]
                 ]
-            ]
         ]
     }
 
