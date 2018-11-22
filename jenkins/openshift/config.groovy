@@ -1,15 +1,11 @@
 app {
-    name = "${opt.'name'?:'jenkins-hello-world'}"
+    name = "${opt.'name'?:'jenkins'}"
     namespaces { //can't call environments :(
         'build'{
-            namespace = 'bcgov-tools'
+            namespace = "${opt.'namespace'?:'csnr-devops-lab-tools'}"
             disposable = true
         }
         'dev' {
-            namespace = app.namespaces.'build'.namespace
-            disposable = true
-        }
-        'test' {
             namespace = app.namespaces.'build'.namespace
             disposable = true
         }
@@ -69,18 +65,18 @@ app {
         host = "${app.deployment.id}-${app.deployment.namespace}.pathfinder.gov.bc.ca"
 
         templates = [
-                [
-                    'file':'jenkins/openshift/jenkins.dc.json',
-                    'params':[
-                        'NAME': "${app.deployment.name}",
-                        'BC_NAME': "${app.build.name}",
-                        'SUFFIX': "${app.deployment.suffix}",
-                        'VERSION': app.deployment.version,
-                        'ROUTE_HOST': app.deployment.host,
-                        'ENV_NAME':app.deployment.env.name,
-                        'ENV_ID':app.deployment.env.id
-                    ]
+            [
+                'file':'jenkins/openshift/jenkins.dc.json',
+                'params':[
+                    'NAME': "${app.deployment.name}",
+                    'BC_NAME': "${app.build.name}",
+                    'SUFFIX': "${app.deployment.suffix}",
+                    'VERSION': app.deployment.version,
+                    'ROUTE_HOST': app.deployment.host,
+                    'ENV_NAME':app.deployment.env.name,
+                    'ENV_ID':app.deployment.env.id
                 ]
+            ]
         ]
     }
 }
