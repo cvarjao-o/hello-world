@@ -1,9 +1,9 @@
 
 app {
-    name = 'jenkins-cvarjao'
+    name = "${opt.'name'?:'jenkins-hello-world'}"
     namespaces {
         'build'{
-            namespace = 'csnr-devops-lab-tools'
+            namespace = "${opt.'namespace'?:'csnr-devops-lab-tools'}"
             disposable = true
         }
         'dev' {
