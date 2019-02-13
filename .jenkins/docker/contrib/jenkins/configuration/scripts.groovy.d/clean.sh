@@ -51,4 +51,4 @@ unset IFS
 
 
 # List of all PR
-oc get all -L env-id -L app-name -l app-name=devhub -o custom-columns=env-id:.metadata.labels.env-id --no-headers=true && oc get dc -l
+oc get all -L env-id -L app-name -l app-name=devhub -o custom-columns=env-id:.metadata.labels.env-id --no-headers=true && oc get dc
