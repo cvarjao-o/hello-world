@@ -31,16 +31,24 @@ IFS=","
 for NAMESPACE in $NAMESPACES; do
   SELECTOR="env-id=pr-${PR},app-name=${APP},env-name!=prod,env-name!=test"
   #echo "SELECTOR:${SELECTOR}"
-
+  #set -x
   # Delete tags produced by buildConfig
-  oc -n $NAMESPACE get bc -l "$SELECTOR" -o json | jq -cMr '.items[].spec.output.to | select (. != null) | .name' | sort | uniq | xargs -t -I {} oc -n $NAMESPACE tag '{}' -d
-
+  while read tag; do
+    set -x
+    echo oc -n $NAMESPACE tag "$tag" -d || true
+    { set +x; } 2>/dev/null
+  done < <(oc -n $NAMESPACE get bc -l "$SELECTOR" -o json | jq -cMr '.items[].spec.output.to | select (. != null) | .name' | sort | uniq)
+  
   #Delete tags used by DeploymentConfig
-  oc -n $NAMESPACE get dc -l "$SELECTOR" -o json | jq -cMr '.items[].spec.triggers[] | select(.type == "ImageChange") | .imageChangeParams.from.name' | sort | uniq | xargs -t -I {} oc -n $NAMESPACE tag '{}' -d
+  #oc -n $NAMESPACE get dc -l "$SELECTOR" -o json | jq -cMr '.items[].spec.triggers[] | select(.type == "ImageChange") | .imageChangeParams.from.name' | sort | uniq | xargs -I {} oc -n $NAMESPACE tag '{}' -d || true
 
-  set -x
-  oc -n $NAMESPACE delete all -l "$SELECTOR"
-  oc -n $NAMESPACE delete 'PersistentVolumeClaim,Secret,ConfigMap,RoleBinding' -l "$SELECTOR"
+  #set -x
+  #oc -n $NAMESPACE delete all -l "$SELECTOR"
+  #oc -n $NAMESPACE delete 'PersistentVolumeClaim,Secret,ConfigMap,RoleBinding' -l "$SELECTOR"
   { set +x; } 2>/dev/null
 done
 unset IFS
+
+
+# List of all PR
+oc get all -L env-id -L app-name -l app-name=devhub -o custom-columns=env-id:.metadata.labels.env-id --no-headers=true && oc get dc -l
