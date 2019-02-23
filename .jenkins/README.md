@@ -33,6 +33,15 @@ oc rsync
 ## Create secrets
 Use the provided `openshift/secrets.json` as follow:
 ```
+oc -n csnr-devops-lab-tools create secret generic 'template.jenkins-slave-user' --from-literal=username=jenkins-slave
+
+oc -n csnr-devops-lab-tools create secret generic 'template.jenkins-github' \
+--from-literal=app-name=cvarjao-bot
+--from-literal=app-id=17861
+--from-file=app-private-key=cvarjao-bot.2019-02-21.private-key.pkcs8.pem
+
+
+
 oc -n bcgov-tools process -f 'openshift/secrets.json' -p 'GH_USERNAME=' -p 'GH_PASSWORD=' | oc  -n bcgov-tools create -f -
 ```
 
@@ -54,4 +63,12 @@ oc -n bcgov-tools policy add-role-to-group 'system:image-puller' 'system:service
 ## Undeploy/Cleanup
 ```
 oc -n bcgov-tools delete is/jenkins
+```
+
+## Cleanup
+```
+curl -sSL https://raw.githubusercontent.com/cvarjao-o/hello-world/WIP/.jenkins/docker/contrib/jenkins/configuration/scripts.groovy.d/clean.sh | bash -s - --namespaces=devhub-tools,devhub-dev --app=devhub --pr=1
+
+
+-Dkeycloak.migration.action=export -Dkeycloak.migration.provider=dir -Dkeycloak.migration.usersExportStrategy=REALM_FILE -Dkeycloak.migration.dir=/tmp -Dkeycloak.migration.usersExportStrategy=SAME_FILE -Dkeycloak.profile=preview
 ```

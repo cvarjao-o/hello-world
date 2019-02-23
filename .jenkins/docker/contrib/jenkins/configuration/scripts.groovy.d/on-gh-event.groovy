@@ -64,7 +64,10 @@ static Map exec(List args, File workingDirectory=null, Appendable stdout=null, A
                     println "Checkout Branch:${sourceBranch}"
 
                     String selector = "env-id=pr-${payload.number},env-name!=prod,github-owner=${repoOwner},github-repo=${repoName},!shared"
-                    ['devops-sso-tools', 'devops-sso-dev'].each({ namespace ->
+
+                    def ocGetProjects = exec(['oc','get','projects','-l','env!=prod', '-o', 'custom-columns=name:.metadata.name', '--no-headers'])
+
+                    ocGetProjects.out.toString().trim().split('\n').each({ namespace ->
                         //BuildConfig Output Images
                         def ocGetBcRet = exec(['oc',"--namespace=${namespace}",'get','bc','-l',selector, '-o', 'jsonpath={range .items[*]}{.spec.output.to.namespace}/{.spec.output.to.name}{"\\n"}{end}'])
                         println ocGetBcRet
@@ -97,7 +100,7 @@ static Map exec(List args, File workingDirectory=null, Appendable stdout=null, A
 
                         //oc get dc -l 'env-id=pr-19,env-name!=prod' -o 'jsonpath={range .items[*]}{range .spec.triggers[*]}{.imageChangeParams.from.namespace}/{.imageChangeParams.from.name}{"\n"}{end}{end}'
                         println exec(['oc', "--namespace=${namespace}", 'delete', 'all', '-l', selector])
-                        println exec(['oc', "--namespace=${namespace}", 'delete', 'PersistentVolumeClaim,Secret,ConfigMap,RoleBinding', '-l', selector])
+                        println exec(['oc', "--namespace=${namespace}", 'delete', 'pvc,Secret,configmap,Endpoints,RoleBinding,role,ServiceAccount', '-l', selector])
                     })
                 }
             }else if ("issue_comment" == ghEventType){

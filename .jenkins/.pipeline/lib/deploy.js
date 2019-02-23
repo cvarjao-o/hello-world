@@ -10,10 +10,14 @@ module.exports = (settings)=>{
   const oc=new OpenShiftClientX({'namespace':phases[phase].namespace});
   var objects = []
 
-  objects = objects.concat(oc.processDeploymentTemplate(oc.toFileUrl(path.resolve(__dirname, '../../openshift/jenkins-dc.json')), {
+  const templatesLocalBaseUrl =oc.toFileUrl(path.resolve(__dirname, '../../openshift'))
+
+  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/jenkins.dc.json`, {
     'param':{
       'NAME': phases[phase].name,
-      'SUFFIX': phases[phase].suffix
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'ROUTE_HOST': `${phases[phase].name}${phases[phase].suffix}-${phases[phase].namespace}.pathfinder.gov.bc.ca`
     }
   }))
 
