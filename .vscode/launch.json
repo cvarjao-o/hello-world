@@ -14,13 +14,25 @@
       "type": "node",
       "request": "launch",
       "name": "Build",
-      "program": "${workspaceFolder}/.pipeline/build.js"
+      "program": "${workspaceFolder}/.pipeline/build.js",
+      "args": ["--pr=0", "--dev-mode=true"],
+      "cwd": "${workspaceFolder}/.pipeline"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Deploy",
-      "program": "${workspaceFolder}/.pipeline/deploy.js"
+      "program": "${workspaceFolder}/.pipeline/deploy.js",
+      "args": ["--pr=0", "--env=dev"],
+      "cwd": "${workspaceFolder}/.pipeline"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Clean",
+      "program": "${workspaceFolder}/.pipeline/clean.js",
+      "args": ["--pr=0", "--dev-mode=true", "--env=build"],
+      "cwd": "${workspaceFolder}/.pipeline"
     }
   ]
 }

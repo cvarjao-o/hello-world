@@ -1,27 +1,26 @@
 'use strict';
-const {OpenShiftClient, OpenShiftClientX} = require('pipeline-cli')
+const {OpenShiftClientX} = require('pipeline-cli')
 const path = require('path');
 
-
 module.exports = (settings)=>{
-  const oc=new OpenShiftClientX({'namespace':'csnr-devops-lab-tools'});
+  const phases=settings.phases
+  const phase = settings.phase
+  const oc=new OpenShiftClientX({'namespace':phases.build.namespace});
   var templateFile = path.resolve(__dirname, '../../openshift/_python36.bc.json')
 
   var objects = oc.process(oc.toFileUrl(templateFile), {
     'param':{
-      'NAME':'hello',
-      'SUFFIX':'-prod',
-      'VERSION':'1.0.0',
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
       'SOURCE_BASE_CONTEXT_DIR':'app-base',
       'SOURCE_CONTEXT_DIR':'app',
-      'SOURCE_REPOSITORY_URL':`${oc.git.uri}`,
+      'SOURCE_REPOSITORY_URL':`${oc.git.http_url}`,
       'SOURCE_REPOSITORY_REF':`${oc.git.branch_ref}`
     }
   })
 
-  oc.applyBestPractices(objects)
-  oc.applyRecommendedLabels(objects, 'hello', 'dev', '1')
-  oc.fetchSecretsAndConfigMaps(objects)
-  var applyResult = oc.apply(objects)
-  applyResult.narrow('bc').startBuild()
+  oc.applyRecommendedLabels(objects, phases[phase].name, phase, phases[phase].changeId, phases[phase].instance)
+
+  oc.applyAndBuild(objects)
 }

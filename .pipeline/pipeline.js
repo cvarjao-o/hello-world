@@ -31,8 +31,8 @@ pipeline(
   ])
   .gate('approve-to-dev', defaultGate,{
     description:'',
-    parameters:[
-      {id:'comment', type:'text', description:'Comment'}
+    actions:[
+      {id:'dev:approve', label:'Approve', description:'Approve deployment to DEV'}
     ]
   })
   .then("deploy-dev", async (ctx, resolve, reject)=>{
@@ -41,16 +41,22 @@ pipeline(
   })
   .gate('approve-to-test', defaultGate,{
     description:'',
-    parameters:[
-      {id:'comment', type:'text', description:'Comment'}
+    actions:[
+      {id:'test:approve', label:'Approve', description:'Approve deployment to TEST'}
     ]
   })
   .then("deploy-test", defaultStep)
+  .gate('approve-to-prod', defaultGate,{
+    description:'',
+    actions:[
+      {id:'prod:approve', label:'Approve', description:'Approve deployment to PRODUCTION'}
+    ]
+  })
   .then("deploy-prod", defaultStep)
   .gate('final-approval', defaultGate,{
     description:'',
-    parameters:[
-      {id:'comment', type:'text', description:'Comment'}
+    actions:[
+      {id:'acceptance:approve', label:'Approve', description:'Final deployment/release approval'}
     ]
   })
   .then("clean", async (ctx, resolve, reject)=>{

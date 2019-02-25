@@ -1,9 +1,9 @@
 'use strict';
 const {OpenShiftClientX} = require('pipeline-cli')
 const path = require('path');
-const phases = require('./config')
 
 module.exports = (settings)=>{
+  const phases=settings.phases
   const oc=new OpenShiftClientX({'namespace':phases.build.namespace});
   const phase='build'
   var objects = []
