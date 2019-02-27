@@ -7,15 +7,23 @@ module.exports = (settings)=>{
   const phase=settings.phase
 
   const oc=new OpenShiftClientX({'namespace':phases[phase].namespace});
-  var templateFile = path.resolve(__dirname, '../../openshift/_python36.dc.json')
+  var templateBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'))
 
-  var objects = oc.process(oc.toFileUrl(templateFile), {
+  var objects = oc.processDeploymentTemplate(`${templateBaseUrl}/python-deploy.yaml`, {
     'param':{
-      'NAME': phases[phase].name,
+      'NAME': `${phases[phase].name}1`,
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
     }
   })
+
+  objects.push(...oc.processDeploymentTemplate(`${templateBaseUrl}/python-deploy.yaml`, {
+    'param':{
+      'NAME': `${phases[phase].name}2`,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+    }
+  }))
 
   oc.applyRecommendedLabels(objects, phases[phase].name, phase, `${phases[phase].changeId}`, phases[phase].instance)
   oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag)

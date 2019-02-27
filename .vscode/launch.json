@@ -23,8 +23,9 @@
       "request": "launch",
       "name": "Deploy",
       "program": "${workspaceFolder}/.pipeline/deploy.js",
-      "args": ["--pr=0", "--env=dev"],
-      "cwd": "${workspaceFolder}/.pipeline"
+      "args": ["--pr=0", "--env=dev", "--dev-mode=true"],
+      "cwd": "${workspaceFolder}/.pipeline",
+      "env": {"DEBUG":"*"}
     },
     {
       "type": "node",

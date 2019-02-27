@@ -12,14 +12,14 @@ pipeline {
                     abortAllPreviousBuildInProgress(currentBuild)
                 }
                 echo "Building ..."
-                sh ".pipeline/cli.sh build --pr=${CHANGE_ID}"
+                sh ".pipeline/npmw build -- --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
             agent { label 'deploy' }
             steps {
                 echo "Deploying ..."
-                sh ".pipeline/cli.sh deploy --pr=${CHANGE_ID} --env=dev"
+                sh ".pipeline/npmw deploy -- --pr=${CHANGE_ID} --env=dev"
             }
         }
     }
