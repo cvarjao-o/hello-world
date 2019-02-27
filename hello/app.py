@@ -8,5 +8,5 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.wfile.write("Hello, world, I am changing!\n")
         return
 
-httpd = HTTPServer(('', 8000), RequestHandler)
+httpd = HTTPServer(('0.0.0.0', 8080), RequestHandler)
 httpd.serve_forever()
