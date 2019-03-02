@@ -30,7 +30,7 @@ pipeline {
                         SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
                     }
                     steps {
-                        sh 'export NVM_DIR="${WORKSPACE}/.nvm" && mkdir -p "${NVM_DIR}" && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash && . "$NVM_DIR/nvm.sh" && nvm install --lts=dubnium && cd hello-test1 && npm run chrome-test'
+                        sh '( { set +x; } 2>/dev/null && export NVM_DIR="${WORKSPACE}/.nvm" && mkdir -p "${NVM_DIR}" && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash && . "$NVM_DIR/nvm.sh" && nvm install --lts=dubnium ) && cd hello-test1 && npm ci && npm run chrome-test'
                     }
                 }
                 stage('GUI Test (Firefox)') {
