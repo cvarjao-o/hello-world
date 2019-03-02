@@ -30,7 +30,7 @@ pipeline {
                         SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
                     }
                     steps {
-                        sh "cd .hello-test1 && ../.pipeline/npmw chrome-test"
+                        sh "cd hello-test1 && ../.pipeline/npmw chrome-test"
                     }
                 }
                 stage('GUI Test (Firefox)') {
@@ -39,7 +39,7 @@ pipeline {
                         SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
                     }
                     steps {
-                        sh "cd .hello-test1 && ../.pipeline/npmw firefox-test"
+                        sh "cd hello-test1 && ../.pipeline/npmw firefox-test"
                     }
                 }
             }
