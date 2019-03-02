@@ -4,15 +4,14 @@ const {OpenShiftClientX} = require('pipeline-cli')
 module.exports = (settings)=>{
   const phases = settings.phases
   const options = settings.options
-  const oc=new OpenShiftClientX({'namespace':phases.build.namespace});
+  const oc=new OpenShiftClientX();
   const target_phase=options.env
 
   for (var k in phases){
     if (phases.hasOwnProperty(k)) {
       const phase=phases[k]
       if (k == target_phase || 'all' == target_phase){
-        //console.log(`phase=${phase}`)
-        //oc.raw('get', ['bc'], {selector:`app-name=${phase.name},env-id=${phase.changeId},env-name!=prod,!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`, namespace:phase.namespace, 'output':'custom-columns=kind:.spec.output.to.kind,name:.spec.output.to.name', 'no-headers':'true'})
+        oc.namespace(phase.namespace)
         let buildConfigs=oc.get('bc', {selector:`app=${phase.instance},env-id=${phase.changeId},!shared,github-repo=${oc.git.repository},github-owner=${oc.git.owner}`, namespace:phase.namespace})
         buildConfigs.forEach((bc)=>{
           if (bc.spec.output.to.kind == 'ImageStreamTag'){

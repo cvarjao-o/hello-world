@@ -6,6 +6,9 @@ hello-world
 oc new-project csnr-devops-lab-tools
 oc new-project csnr-devops-lab-deploy
 
+
+oc -n csnr-devops-lab-tools policy add-role-to-group admin 'system:serviceaccounts:csnr-devops-lab-deploy' --rolebinding-name=jenkins
+
 oc -n csnr-devops-lab-tools policy add-role-to-group system:image-puller 'system:serviceaccounts:csnr-devops-lab-deploy' --rolebinding-name=cross-project-pull
 
 cd .pipeline
