@@ -12,12 +12,27 @@ module.exports = (settings)=>{
 
   const templatesLocalBaseUrl =oc.toFileUrl(path.resolve(__dirname, '../../openshift'))
 
-  objects = objects.concat(oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/jenkins.dc.json`, {
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/jenkins.dc.json`, {
     'param':{
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'ROUTE_HOST': `${phases[phase].name}${phases[phase].suffix}-${phases[phase].namespace}.pathfinder.gov.bc.ca`
+    }
+  }))
+
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/deploy-slave.yaml`, {
+    'param':{
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'SLAVE_NAME': 'ui-test',
+      'SLAVE_LABELS': 'ui-test',
+      'SLAVE_EXECUTORS': '1',
+      'CPU_REQUEST': '0',
+      'CPU_LIMIT': '0',
+      'MEMORY_REQUEST': '0',
+      'MEMORY_LIMIT': '0'
     }
   }))
 

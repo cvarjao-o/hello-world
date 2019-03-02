@@ -25,21 +25,21 @@ pipeline {
         stage('GUI Test'){
             parallel {
                 stage('GUI Test (Chrome)') {
-                    agent { label 'deploy' }
+                    agent { label 'ui-test' }
                     environment {
                         SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
                     }
                     steps {
-                        sh '( { set +x; } 2>/dev/null && export NVM_DIR="${WORKSPACE}/.nvm" && mkdir -p "${NVM_DIR}" && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash && . "$NVM_DIR/nvm.sh" && nvm install --lts=dubnium ) && cd hello-test1 && npm ci && npm run chrome-test'
+                        sh '{ set +x; } 2>/dev/null && export NVM_DIR="${WORKSPACE}/.nvm" && (mkdir -p "${NVM_DIR}" && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash && source "$NVM_DIR/nvm.sh" && nvm install --lts=dubnium --no-progress ) && . "$NVM_DIR/nvm.sh" && set -x && nvm use --lts=dubnium && cd hello-test1 && npm ci && npm run chrome-test'
                     }
                 }
                 stage('GUI Test (Firefox)') {
-                    agent { label 'deploy' }
+                    agent { label 'ui-test' }
                     environment {
                         SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
                     }
                     steps {
-                        sh "cd hello-test1 && ../.pipeline/npmw firefox-test"
+                        sh '{ set +x; } 2>/dev/null && export NVM_DIR="${WORKSPACE}/.nvm" && (mkdir -p "${NVM_DIR}" && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash && source "$NVM_DIR/nvm.sh" && nvm install --lts=dubnium --no-progress ) && . "$NVM_DIR/nvm.sh" && set -x && nvm use --lts=dubnium && cd hello-test1 && npm ci && npm run firefox-test'
                     }
                 }
             }
