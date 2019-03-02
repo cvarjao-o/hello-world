@@ -29,7 +29,7 @@ objects:
     creationTimestamp: null
     name: ${NAME}${SUFFIX}
   spec:
-    replicas: 1
+    replicas: 2
     selector:
       deploymentconfig: ${NAME}${SUFFIX}
     strategy:
@@ -47,8 +47,9 @@ objects:
           deploymentconfig: ${NAME}${SUFFIX}
       spec:
         containers:
-        - image: " "
-          name: app
+        - name: app
+          # Image MUST NOT be defined as it will trigger false-positive for ImageChangeTrigger
+          #image: ''
           imagePullPolicy: Always
           ports:
           - containerPort: 8080
