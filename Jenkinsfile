@@ -12,14 +12,14 @@ pipeline {
                     abortAllPreviousBuildInProgress(currentBuild)
                 }
                 echo "Building ..."
-                sh "cd .pipeline && ./npmw build -- --pr=${CHANGE_ID}"
+                sh "cd .pipeline && DEBUG='info:*' ./npmw build -- --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
             agent { label 'deploy' }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline && ./npmw deploy -- --pr=${CHANGE_ID} --env=dev"
+                sh "cd .pipeline && DEBUG='info:*' ./npmw deploy -- --pr=${CHANGE_ID} --env=dev"
             }
         }
         stage('GUI Test'){
@@ -55,7 +55,7 @@ pipeline {
             }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline && ./npmw deploy -- --pr=${CHANGE_ID} --env=test"
+                sh "cd .pipeline && DEBUG='info:*' ./npmw deploy -- --pr=${CHANGE_ID} --env=test"
             }
         }
         stage('Deploy (PROD)') {
