@@ -1,5 +1,9 @@
 module.exports = function () {
 
+    this.Given(/^User has a browser with access to the internet$/, function (callback) {
+        callback()
+    });
+
   this.When(/^I search Google for "([^"]*)"$/, function (searchQuery) {
 
       return helpers.loadPage('http://www.google.com').then(function() {

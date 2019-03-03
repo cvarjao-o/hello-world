@@ -3,5 +3,6 @@
   "pageObjects": "./page-objects",
   "sharedObjects": "./shared-objects",
   "reports": "./reports",
-  "timeout": 60000
+  "timeout": 60000,
+  "junit": "./reports/junit"
 }
