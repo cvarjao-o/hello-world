@@ -128,6 +128,12 @@ pipeline {
                 expression { return env.CHANGE_TARGET == 'master';}
                 beforeInput  true
             }
+            input {
+                message "Should we start deployment to PROD?"
+                ok "Yes!"
+                submitter 'authenticated'
+                submitterParameter "APPROVED_BY"
+            }
             steps {
                 echo "Deploying ..."
                 script{
