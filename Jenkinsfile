@@ -10,7 +10,6 @@ pipeline {
             steps {
                 echo "Aborting all running jobs ..."
                 script {
-                    def deploymentId = gitHubCreateDeployment(['environment':"DEV", 'task':"deploy:dev:${env.CHANGE_ID}"])
                     abortAllPreviousBuildInProgress(currentBuild)
                     echo "Building ..."
                     sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run build -- --pr=${CHANGE_ID}"
@@ -22,13 +21,12 @@ pipeline {
             steps {
                 echo "Deploying ..."
                 script{
-                    def deploymentId = gitHubCreateDeployment(['environment':"DEV", 'task':"deploy:dev:${env.CHANGE_ID}"])
+                    def deploymentId = gitHubCreateDeployment(this, 'DEV', ['targetUrl':env.BUILD_URL])
                     try{
-                        GitHubHelper.createDeploymentStatus(this, deploymentId, 'PENDING', ['targetUrl':env.BUILD_URL])
                         sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=dev"
-                        GitHubHelper.createDeploymentStatus(this, deploymentId, 'SUCCESS', ['targetUrl':env.BUILD_URL])
+                        gitHubCreateDeploymentStatus(this, deploymentId, 'SUCCESS', ['targetUrl':env.BUILD_URL])
                     }catch (error) {
-                        GitHubHelper.createDeploymentStatus(this, deploymentId, 'ERROR', ['targetUrl':env.BUILD_URL])
+                        gitHubCreateDeploymentStatus(this, deploymentId, 'ERROR', ['targetUrl':env.BUILD_URL])
                         throw error
                     }
                 }
@@ -71,11 +69,18 @@ pipeline {
                 submitterParameter "APPROVED_BY"
             }
             steps {
-                script{
-                    GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
-                }
                 echo "Deploying ..."
-                sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=test"
+                script{
+                    //GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                    def deploymentId = gitHubCreateDeployment(this, 'TEST', ['targetUrl':env.BUILD_URL])
+                    try{
+                        sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=test"
+                        gitHubCreateDeploymentStatus(this, deploymentId, 'SUCCESS', ['targetUrl':env.BUILD_URL])
+                    }catch (error) {
+                        gitHubCreateDeploymentStatus(this, deploymentId, 'ERROR', ['targetUrl':env.BUILD_URL])
+                        throw error
+                    }
+                }
             }
         }
         stage('Deploy (PROD)') {
@@ -90,11 +95,18 @@ pipeline {
                 submitterParameter "APPROVED_BY"
             }
             steps {
-                script{
-                    GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'PROD'")
-                }
                 echo "Deploying ..."
-                sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
+                script{
+                    //GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                    def deploymentId = gitHubCreateDeployment(this, 'PROD', ['targetUrl':env.BUILD_URL])
+                    try{
+                        sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
+                        gitHubCreateDeploymentStatus(this, deploymentId, 'SUCCESS', ['targetUrl':env.BUILD_URL])
+                    }catch (error) {
+                        gitHubCreateDeploymentStatus(this, deploymentId, 'ERROR', ['targetUrl':env.BUILD_URL])
+                        throw error
+                    }
+                }
             }
         }
         stage('Cleanup') {
@@ -107,7 +119,7 @@ pipeline {
             }
             steps {
                 script{
-                    GitHubHelper.mergeAndClosePullRequest(this, (env.CHANGE_TARGET == 'master')?'merge':'squash')
+                    bcgov.GitHubHelper.mergeAndClosePullRequest(this, (env.CHANGE_TARGET == 'master')?'merge':'squash')
                 }
             }
         }

@@ -42,7 +42,7 @@ module.exports = (settings)=>{
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
       'SLAVE_NAME': 'test',
-      'SLAVE_LABELS': 'test',
+      'SLAVE_LABELS': 'test ui-test',
       'SLAVE_EXECUTORS': '1',
       'CPU_REQUEST': '0',
       'CPU_LIMIT': '0',
