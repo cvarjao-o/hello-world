@@ -12,14 +12,14 @@ pipeline {
                     abortAllPreviousBuildInProgress(currentBuild)
                 }
                 echo "Building ..."
-                sh "cd .pipeline && \"$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run build -- --pr=${CHANGE_ID}"
+                sh "cd .pipeline && \"\$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run build -- --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
             agent { label 'deploy' }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline && \"$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run deploy -- --pr=${CHANGE_ID} --env=dev"
+                sh "cd .pipeline && \"\$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run deploy -- --pr=${CHANGE_ID} --env=dev"
             }
         }
         stage('GUI Test'){
@@ -57,7 +57,7 @@ pipeline {
             }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline && \"$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run deploy -- --pr=${CHANGE_ID} --env=test"
+                sh "cd .pipeline && \"\$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run deploy -- --pr=${CHANGE_ID} --env=test"
             }
         }
         stage('Deploy (PROD)') {
@@ -71,7 +71,7 @@ pipeline {
             }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline && \"$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run deploy -- --pr=${CHANGE_ID} --env=prod"
+                sh "cd .pipeline && \"\$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run deploy -- --pr=${CHANGE_ID} --env=prod"
             }
         }
     }
