@@ -57,6 +57,22 @@ pipeline {
                 }
             }
         }
+        stage('Aprove (TEST)') {
+            agent { label 'deploy' }
+            when {
+                expression { return env.CHANGE_TARGET == 'master';}
+            }
+            input {
+                message "Should we continue with deployment to TEST?"
+                ok "Yes!"
+                submitter 'authenticated'
+                submitterParameter "APPROVED_BY"
+            }
+            steps {
+                echo "Approved by ${APPROVED_BY}"
+                GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+            }
+        }
         stage('Deploy (TEST)') {
             agent { label 'deploy' }
             when {
@@ -83,7 +99,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy (PROD)') {
+        stage('Aprove (PROD)') {
             agent { label 'deploy' }
             when {
                 expression { return env.CHANGE_TARGET == 'master';}
@@ -95,9 +111,18 @@ pipeline {
                 submitterParameter "APPROVED_BY"
             }
             steps {
+                echo "Approved by ${APPROVED_BY}"
+                GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'PROD'")
+            }
+        }
+        stage('Deploy (PROD)') {
+            agent { label 'deploy' }
+            when {
+                expression { return env.CHANGE_TARGET == 'master';}
+            }
+            steps {
                 echo "Deploying ..."
                 script{
-                    //GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
                     def deploymentId = gitHubCreateDeployment(this, 'PROD', ['targetUrl':env.BUILD_URL])
                     try{
                         sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
