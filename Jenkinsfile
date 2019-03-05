@@ -1,4 +1,4 @@
-import bcgov.GitHubHelper
+@Library('utils') _
 
 pipeline {
     agent none
@@ -11,10 +11,11 @@ pipeline {
             steps {
                 echo "Aborting all running jobs ..."
                 script {
+                    def deploymentId = gitHubCreateDeployment(['environment':"DEV", 'task':"deploy:dev:${env.CHANGE_ID}"])
                     abortAllPreviousBuildInProgress(currentBuild)
+                    echo "Building ..."
+                    sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run build -- --pr=${CHANGE_ID}"
                 }
-                echo "Building ..."
-                sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run build -- --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
@@ -22,8 +23,7 @@ pipeline {
             steps {
                 echo "Deploying ..."
                 script{
-                    def commitId = sh(returnStdout: true, script: 'git rev-parse HEAD')
-                    def deploymentId = GitHubHelper.createDeployment(this, commitId, ['environment':"DEV", 'task':"deploy:dev:${env.CHANGE_ID}"])
+                    def deploymentId = gitHubCreateDeployment(['environment':"DEV", 'task':"deploy:dev:${env.CHANGE_ID}"])
                     try{
                         GitHubHelper.createDeploymentStatus(this, deploymentId, 'PENDING', ['targetUrl':env.BUILD_URL])
                         sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=dev"
