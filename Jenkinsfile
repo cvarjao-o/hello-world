@@ -70,7 +70,7 @@ pipeline {
             }
             steps {
                 echo "Approved by ${APPROVED_BY}"
-                GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
             }
         }
         stage('Deploy (TEST)') {
@@ -87,7 +87,7 @@ pipeline {
             steps {
                 echo "Deploying ..."
                 script{
-                    GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                    bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
                     def deploymentId = gitHubCreateDeployment(this, 'TEST', ['targetUrl':env.BUILD_URL])
                     try{
                         sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=test"
@@ -112,7 +112,7 @@ pipeline {
             }
             steps {
                 echo "Approved by ${APPROVED_BY}"
-                GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'PROD'")
+                bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'PROD'")
             }
         }
         stage('Deploy (PROD)') {
