@@ -72,7 +72,9 @@ pipeline {
                 submitterParameter "APPROVED_BY"
             }
             steps {
-                GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                script{
+                    GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                }
                 echo "Deploying ..."
                 sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=test"
             }
@@ -89,7 +91,9 @@ pipeline {
                 submitterParameter "APPROVED_BY"
             }
             steps {
-                GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'PROD'")
+                script{
+                    GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'PROD'")
+                }
                 echo "Deploying ..."
                 sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
             }
