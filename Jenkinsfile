@@ -71,7 +71,7 @@ pipeline {
             steps {
                 echo "Deploying ..."
                 script{
-                    //GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                    GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
                     def deploymentId = gitHubCreateDeployment(this, 'TEST', ['targetUrl':env.BUILD_URL])
                     try{
                         sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=test"
@@ -116,10 +116,13 @@ pipeline {
                 ok "Yes!"
                 submitter 'authenticated'
                 submitterParameter "APPROVED_BY"
+                parameters {
+                    choice(name: 'MERGE_METHOD', choices: ((env.CHANGE_TARGET == 'master')?['merge', 'squash']:['squash', 'merge']), description: '')
+                }
             }
             steps {
                 script{
-                    bcgov.GitHubHelper.mergeAndClosePullRequest(this, (env.CHANGE_TARGET == 'master')?'merge':'squash')
+                    bcgov.GitHubHelper.mergeAndClosePullRequest(this, "${MERGE_METHOD}")
                 }
             }
         }
