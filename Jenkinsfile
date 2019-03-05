@@ -12,14 +12,14 @@ pipeline {
                     abortAllPreviousBuildInProgress(currentBuild)
                 }
                 echo "Building ..."
-                sh "cd .pipeline && DEBUG='info:*' ./npmw build -- --pr=${CHANGE_ID}"
+                sh "cd .pipeline && \"$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run build -- --pr=${CHANGE_ID}"
             }
         }
         stage('Deploy (DEV)') {
             agent { label 'deploy' }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline && DEBUG='info:*' ./npmw deploy -- --pr=${CHANGE_ID} --env=dev"
+                sh "cd .pipeline && \"$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run deploy -- --pr=${CHANGE_ID} --env=dev"
             }
         }
         stage('GUI Test'){
@@ -30,7 +30,8 @@ pipeline {
                         SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
                     }
                     steps {
-                        sh '{ set +x; } 2>/dev/null && export NVM_DIR="${WORKSPACE}/.nvm" && (mkdir -p "${NVM_DIR}" && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash && source "$NVM_DIR/nvm.sh" && nvm install --lts=dubnium --no-progress ) && . "$NVM_DIR/nvm.sh" && set -x && nvm use --lts=dubnium && cd hello-test1 && npm ci && npm run chrome-test'
+                        //sh 'cd hello-test1 && "$(git rev-parse --show-toplevel)/npmw" ci && npm run chrome-test'
+                        echo "Skipping."
                     }
                 }
                 stage('GUI Test (Firefox)') {
@@ -56,7 +57,7 @@ pipeline {
             }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline && DEBUG='info:*' ./npmw deploy -- --pr=${CHANGE_ID} --env=test"
+                sh "cd .pipeline && \"$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run deploy -- --pr=${CHANGE_ID} --env=test"
             }
         }
         stage('Deploy (PROD)') {
@@ -70,7 +71,7 @@ pipeline {
             }
             steps {
                 echo "Deploying ..."
-                sh "cd .pipeline && ./npmw deploy -- --pr=${CHANGE_ID} --env=prod"
+                sh "cd .pipeline && \"$(git rev-parse --show-toplevel)/npmw\" ci && DEBUG='info:*' npm run deploy -- --pr=${CHANGE_ID} --env=prod"
             }
         }
     }

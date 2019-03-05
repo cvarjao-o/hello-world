@@ -1,10 +1,10 @@
 'use strict';
 const {OpenShiftClientX} = require('pipeline-cli')
 const path = require('path');
-const phases = require('./config')
-const options= require('pipeline-cli').Util.parseArguments()
 
 module.exports = (settings)=>{
+  const phases=settings.phases
+  const options=settings.options
   const phase=options.env
   const changeId = phases[phase].changeId
   const oc=new OpenShiftClientX({'namespace':phases[phase].namespace});
@@ -12,7 +12,7 @@ module.exports = (settings)=>{
 
   const templatesLocalBaseUrl =oc.toFileUrl(path.resolve(__dirname, '../../openshift'))
 
-  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/jenkins.dc.json`, {
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/deploy.yaml`, {
     'param':{
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
@@ -26,8 +26,23 @@ module.exports = (settings)=>{
       'NAME': phases[phase].name,
       'SUFFIX': phases[phase].suffix,
       'VERSION': phases[phase].tag,
-      'SLAVE_NAME': 'ui-test',
-      'SLAVE_LABELS': 'ui-test',
+      'SLAVE_NAME': 'build',
+      'SLAVE_LABELS': 'build deploy',
+      'SLAVE_EXECUTORS': '3',
+      'CPU_REQUEST': '300m',
+      'CPU_LIMIT': '500m',
+      'MEMORY_REQUEST': '2Gi',
+      'MEMORY_LIMIT': '2Gi'
+    }
+  }))
+  
+  objects.push(...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/deploy-slave.yaml`, {
+    'param':{
+      'NAME': phases[phase].name,
+      'SUFFIX': phases[phase].suffix,
+      'VERSION': phases[phase].tag,
+      'SLAVE_NAME': 'test',
+      'SLAVE_LABELS': 'test',
       'SLAVE_EXECUTORS': '1',
       'CPU_REQUEST': '0',
       'CPU_LIMIT': '0',

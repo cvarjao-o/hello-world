@@ -30,3 +30,4 @@ output
 
 .pipeline/pipeline.state.json
 .scannerwork
+.nvm/
