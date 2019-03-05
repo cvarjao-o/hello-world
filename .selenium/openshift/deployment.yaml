@@ -1,0 +1,260 @@
+apiVersion: v1
+objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      shared: "true"
+    name: ${NAME}-hub
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: selenium/hub:3.141
+      from:
+        kind: DockerImage
+        name: selenium/hub:3.141
+      generation: null
+      importPolicy: {}
+      name: "3.141"
+      referencePolicy:
+        type: "Local"
+  status:
+    dockerImageRepository: ""
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels: null
+    name: ${NAME}-hub${SUFFIX}
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: ${NAME}-hub${SUFFIX}
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          deploymentconfig: ${NAME}-hub${SUFFIX}
+      spec:
+        containers:
+        - image: " "
+          name: selenium-hub
+          ports:
+          - containerPort: 4444
+            protocol: TCP
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - selenium-hub
+        from:
+          kind: ImageStreamTag
+          name: ${NAME}-hub:3.141
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels: null
+    name: ${NAME}-hub${SUFFIX}
+  spec:
+    ports:
+    - name: 4444-tcp
+      port: 4444
+      protocol: TCP
+      targetPort: 4444
+    selector:
+      deploymentconfig: ${NAME}-hub${SUFFIX}
+  status:
+    loadBalancer: {}
+# Chrome
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      shared: "true"
+    name: ${NAME}-chrome
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: selenium/node-chrome:3.141
+      from:
+        kind: DockerImage
+        name: selenium/node-chrome:3.141
+      generation: null
+      importPolicy: {}
+      name: "3.141"
+      referencePolicy:
+        type: "Local"
+  status:
+    dockerImageRepository: ""
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels: null
+    name: ${NAME}-chrome${SUFFIX}
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: ${NAME}-chrome${SUFFIX}
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          deploymentconfig: ${NAME}-chrome${SUFFIX}
+      spec:
+        containers:
+        - image: " "
+          env:
+            - name: HUB_PORT_4444_TCP_PORT
+              value: '4444'
+            - name: HUB_PORT_4444_TCP_ADDR
+              value: ${NAME}-hub${SUFFIX}
+          name: selenium-chrome
+          resources: 
+            limits:
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - selenium-chrome
+        from:
+          kind: ImageStreamTag
+          name: ${NAME}-chrome:3.141
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+# Firefox
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      shared: "true"
+    name: ${NAME}-firefox
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: selenium/node-firefox:3.141
+      from:
+        kind: DockerImage
+        name: selenium/node-firefox:3.141
+      generation: null
+      importPolicy: {}
+      name: "3.141"
+      referencePolicy:
+        type: "Local"
+  status:
+    dockerImageRepository: ""
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+    name: ${NAME}-firefox${SUFFIX}
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: ${NAME}-firefox${SUFFIX}
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          deploymentconfig: ${NAME}-firefox${SUFFIX}
+      spec:
+        containers:
+        - image: " "
+          env:
+            - name: HUB_PORT_4444_TCP_PORT
+              value: '4444'
+            - name: HUB_PORT_4444_TCP_ADDR
+              value: ${NAME}-hub${SUFFIX}
+          name: selenium-firefox
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - selenium-firefox
+        from:
+          kind: ImageStreamTag
+          name: ${NAME}-firefox:3.141
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+kind: Template
+metadata: {}
+parameters:
+- name: NAME
+  value: selenium
+- name: SUFFIX

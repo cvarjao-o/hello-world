@@ -1,0 +1,49 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  annotations: {}
+  creationTimestamp: null
+  labels: {}
+  name: zap
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: zap:latest
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    dockerfile: >+
+      FROM registry.hub.docker.com/owasp/zap2docker-stable:2.7.0
+      USER 0
+      ADD https://raw.githubusercontent.com/RHsyseng/container-rhel-examples/master/starter-arbitrary-uid/bin/uid_entrypoint /usr/local/bin/
+      RUN fix_permission(){ chgrp -R 0 "$1" && chmod -R g=u "$1"; } && \
+          set -x && chmod 755 /usr/local/bin/uid_entrypoint && \
+          fix_permission /etc/passwd && \
+          fix_permission /zap && \
+          fix_permission /home/zap  && \
+          fix_permission /home/zap/.ZAP
+      ENV USER_NAME="zap" \
+          USER_UID=1000
+      USER 1000
+    type: Dockerfile
+  strategy:
+    dockerStrategy:
+      env:
+      - name: USER_NAME
+        value: zap
+      from:
+        kind: ImageStreamTag
+        name: zap2docker-stable:2.7.0
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+  triggers:
+  - imageChange:
+      lastTriggeredImageID: registry.hub.docker.com/owasp/zap2docker-stable@sha256:0deed8bcdf8d831f368a790be453e53107791f10104c76f2281df116db71a02d
+    type: ImageChange
+  - type: ConfigChange
+status:
+  lastVersion: 0
