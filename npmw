@@ -1,4 +1,5 @@
 #!/bin/sh
+set +x
 type -t nvm && nvm deactivate
 export NVM_DIR="$(git rev-parse --show-toplevel)/.nvm"
 if [ ! -f "$NVM_DIR/nvm.sh" ]; then
