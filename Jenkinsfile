@@ -61,6 +61,7 @@ pipeline {
             agent { label 'deploy' }
             when {
                 expression { return env.CHANGE_TARGET == 'master';}
+                beforeInput  true
             }
             input {
                 message "Should we continue with deployment to TEST?"
@@ -79,9 +80,10 @@ pipeline {
             agent { label 'deploy' }
             when {
                 expression { return env.CHANGE_TARGET == 'master';}
+                beforeInput  true
             }
             input {
-                message "Should we continue with deployment to TEST?"
+                message "Should we start deployment to TEST?"
                 ok "Yes!"
                 submitter 'authenticated'
                 submitterParameter "APPROVED_BY"
@@ -89,7 +91,7 @@ pipeline {
             steps {
                 echo "Deploying ..."
                 script{
-                    bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                    bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has started deployment to 'TEST'")
                     def deploymentId = gitHubCreateDeployment(this, 'TEST', ['targetUrl':env.BUILD_URL])
                     try{
                         sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=test"
@@ -105,6 +107,7 @@ pipeline {
             agent { label 'deploy' }
             when {
                 expression { return env.CHANGE_TARGET == 'master';}
+                beforeInput  true
             }
             input {
                 message "Should we continue with deployment to PROD?"
@@ -123,10 +126,12 @@ pipeline {
             agent { label 'deploy' }
             when {
                 expression { return env.CHANGE_TARGET == 'master';}
+                beforeInput  true
             }
             steps {
                 echo "Deploying ..."
                 script{
+                    bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has started deployment to 'PROD'")
                     def deploymentId = gitHubCreateDeployment(this, 'PROD', ['targetUrl':env.BUILD_URL])
                     try{
                         sh "cd .pipeline && ${WORKSPACE}/npmw ci && DEBUG='info:*' ${WORKSPACE}/npmw run deploy -- --pr=${CHANGE_ID} --env=prod"
