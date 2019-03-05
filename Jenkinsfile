@@ -70,7 +70,9 @@ pipeline {
             }
             steps {
                 echo "Approved by ${APPROVED_BY}"
-                bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                script{
+                    bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'TEST'")
+                }
             }
         }
         stage('Deploy (TEST)') {
@@ -112,7 +114,9 @@ pipeline {
             }
             steps {
                 echo "Approved by ${APPROVED_BY}"
-                bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'PROD'")
+                script{
+                    bcgov.GitHubHelper.getPullRequest(this).comment("User '${APPROVED_BY}' has approved deployment to 'PROD'")
+                }
             }
         }
         stage('Deploy (PROD)') {
