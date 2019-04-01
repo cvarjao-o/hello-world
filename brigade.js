@@ -19,8 +19,9 @@ function runTests(e, project) {
   // Now we want it to run these commands in order:
   testRunner.tasks = [
     "cd /src/uuid-generator",
-    "pip install -r requirements.txt",
-    "python setup.py test"
+    //"pip install -r requirements.txt",
+    //"python setup.py test"
+    "python --version"
   ];
 
   // Display logs from the job Pod
