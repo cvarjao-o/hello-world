@@ -1,4 +1,4 @@
-const { events } = require("brigadier");
+const { events, Job } = require("brigadier");
 
 // GitHub Check events to watch for
 //
