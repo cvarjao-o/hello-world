@@ -31,3 +31,5 @@ output
 .pipeline/pipeline.state.json
 .scannerwork
 .nvm/
+brigade/brigade
+brigade/resources
