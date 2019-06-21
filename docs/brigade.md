@@ -12,13 +12,23 @@ helm fetch --untar --untardir './brigade' brigade/brigade
 
 oc create -f brigade/resources/ -R --dry-run -o json | jq -s 'del(.[] | .metadata.namespace) | { "apiVersion": "v1", "kind": "Template","objects": .}' | oc create -f - --dry-run -o yaml > brigade/brigade.yaml
 
+oc new-build -D $'FROM brigadecore/brigade-worker:v1.0.0\nRUN chgrp -R 0 /home/src && chmod -R g=u /home/src' --name=brigade-worker --dry-run=true -o yaml > build.yaml
+
 # remove .metadata
 # add .parameters
 
 oc process -f brigade/brigade.yaml --param-file=brigade/vars.local "--param=GITHUB_APP_KEY=$(<brigade/cvarjao-bot.private-key.pem)" -l app=brigade | oc create -f -
 
+oc process -f brigade/build.yaml -l app=brigade | oc create -f -
+
 oc delete all -l app=brigade && oc delete -l app=brigade
 ```
 
+```
+#Create Brigade Project
+brig -n csnr-devops-lab-tools project create
+
+
+```
 Reference
 - https://brigade.sh/
