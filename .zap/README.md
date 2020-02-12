@@ -1,3 +1,4 @@
+```
 oc new-app registry.hub.docker.com/owasp/zap2docker-bare:2.7.0
 
 
@@ -18,6 +19,7 @@ oc run zap-stable --image=registry.hub.docker.com/owasp/zap2docker-stable:2.7.0 
 
 
 zap-cli -v quick-scan --self-contained --spider --start-options '-config api.disabledkey=true' -r https://hello1-test-csnr-devops-lab-deploy.pathfinder.gov.bc.ca
+```
 
 # References
  https://www.nearform.com/blog/zed-attack-proxy-in-a-ci-pipeline/
